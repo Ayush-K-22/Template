@@ -7,6 +7,8 @@ using namespace std;
 #define int long long
 #define vi vector <int>
 
+// Array Indexing is 0-based while SegTree is 1-based
+
 class SegTree_SinglePoint {
     private :
         vi SegTree;
