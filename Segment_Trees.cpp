@@ -1,39 +1,24 @@
-/*
-    * Author : AyushK22
-*/
-
 #include<bits/stdc++.h>
 using namespace std;
-#define int long long
 #define vi vector <int>
 
 // Array Indexing is 0-based while SegTree is 1-based
-
-class SegTree_SinglePoint {
+template <typename A> class SegTree_SinglePoint {
     private :
-        vi SegTree;
+        vector <A> SegTree;
 
     public :
-        SegTree_SinglePoint (int n) {
+        SegTree_SinglePoint (vector <A> &v) {
+            int n = v.size();
             SegTree.resize(4*n, -1);
+            build (v,0,n-1,1);
         }
 
-        int Combine (int u, int v){
+        A Combine (A u, A v) {
             return u + v;
         }
 
-        void build (vi &v, int st, int end, int ind) {
-            if (st == end) {
-                SegTree[ind] = v[st];
-                return;
-            }
-            int mid = (st+end)/2;
-            build (v,st,mid,2*ind);
-            build (v,mid+1,end,2*ind+1);
-            SegTree[ind] = Combine(SegTree[2*ind], SegTree[2*ind+1]);
-        }
-
-        int getAns (int st, int end, int ind, int left, int right){
+        A getAns (int st, int end, int ind, int left, int right){
             if (end < left || st > right) return 0;
             if (left <= st && right >= end) return SegTree[ind];
             else {
@@ -42,7 +27,7 @@ class SegTree_SinglePoint {
             }
         }
 
-        void Updation (int tar_ind, int val, int st, int end, int ind) {
+        void Updation (int tar_ind, A val, int st, int end, int ind) {
             if (st == end){
                 SegTree[ind] = val;
                 return;
@@ -54,23 +39,9 @@ class SegTree_SinglePoint {
         
             SegTree[ind] = Combine (SegTree[2*ind], SegTree[2*ind+1]);
         }
-};
 
-class SegTree_LazyPropagation {
     private :
-        vi SegTree, Lazy;
-
-    public :
-        SegTree_LazyPropagation (int n) {
-            SegTree.resize(4*n, -1);
-            Lazy.resize(4*n);
-        }
-
-        int Combine (int u, int v){
-            return u + v;
-        }
-
-        void build (vi &v, int st, int end, int ind) {
+        void build (vector <A> &v, int st, int end, int ind) {
             if (st == end) {
                 SegTree[ind] = v[st];
                 return;
@@ -78,7 +49,24 @@ class SegTree_LazyPropagation {
             int mid = (st+end)/2;
             build (v,st,mid,2*ind);
             build (v,mid+1,end,2*ind+1);
-            SegTree[ind] = Combine (SegTree[2*ind], SegTree[2*ind+1]);
+            SegTree[ind] = Combine(SegTree[2*ind], SegTree[2*ind+1]);
+        }
+};
+
+template <typename A> class SegTree_LazyPropagation {
+    private :
+        vector <A> SegTree, Lazy;
+
+    public :
+        SegTree_LazyPropagation (vector <A> &v) {
+            int n = v.size();
+            SegTree.resize(4*n, -1);
+            Lazy.resize(4*n);
+            build (v,0,n-1,1);
+        }
+
+        A Combine (A u, A v) {
+            return u + v;
         }
 
         void Propagate (int ind, int st, int end) {
@@ -90,7 +78,7 @@ class SegTree_LazyPropagation {
             Lazy[ind] = 0;
         }
 
-        void Updation (int val, int st, int end, int ind, int left, int right) {
+        void Updation (A val, int st, int end, int ind, int left, int right) {
             if (Lazy[ind]) 
                 Propagate(ind,st,end);
         
@@ -107,7 +95,7 @@ class SegTree_LazyPropagation {
             }
         }
 
-        int getAns (int st, int end, int ind, int left, int right){
+        A getAns (int st, int end, int ind, int left, int right){
             if (end < left || st > right) return 0;
         
             if (Lazy[ind])
@@ -118,5 +106,18 @@ class SegTree_LazyPropagation {
                 int mid = (st+end)/2;
                 return getAns(st,mid,2*ind,left,right) + getAns(mid+1,end,2*ind+1,left,right);
             }
+        }
+
+    private :
+        void build (vector <A> &v, int st, int end, int ind) {
+            if (st == end) {
+                SegTree[ind] = v[st];
+                return;
+            }
+
+            int mid = (st+end)/2;
+            build (v,st,mid,2*ind);
+            build (v,mid+1,end,2*ind+1);
+            SegTree[ind] = Combine (SegTree[2*ind], SegTree[2*ind+1]);
         }
 };
